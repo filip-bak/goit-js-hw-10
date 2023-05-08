@@ -9,48 +9,21 @@ let searchBoxEl;
 let countryListEl;
 let countryInfoEl;
 let infoButton;
+
 function createElement({
   elementType,
   innerText,
-  bold = false,
   dataset = {},
-  flex = false,
-  fontSize,
+  classes,
   src,
   alt,
-  size,
 } = {}) {
   const elem = document.createElement(elementType);
 
-  if (elementType === 'img') {
-    elem.style.display = 'block';
-    elem.style.objectFit = 'contain';
-  }
-  if (elementType === 'ul') {
-    elem.style.listStyle = 'none';
-  }
-  if (elementType === 'li' && flex) {
-    elem.style.alignItems = 'center';
-    elem.style.columnGap = `${20}px`;
-  }
-  if (elementType === 'button') {
-    elem.style.background = 'aqua';
-    elem.style.border = 'none';
-    elem.style.fontSize = `${20}px`;
-    elem.style.width = `${60}px`;
-    elem.style.width = `${60}px`;
-  }
-
   if (innerText) elem.innerText = innerText;
-  if (bold) elem.style.fontWeight = '700';
-  if (flex) elem.style.display = 'flex';
-  if (fontSize) elem.style.fontSize = `${fontSize}px`;
+  if (classes) elem.classList.add(...classes);
   if (src) elem.src = src;
   if (alt) elem.alt = alt;
-  if (size) {
-    elem.style.width = `${size}px`;
-    elem.style.height = `${size}px`;
-  }
 
   Object.keys(dataset).forEach(key => {
     elem.dataset[key] = dataset[key];
@@ -73,6 +46,7 @@ const listOfCountriesLayout = object => {
 
     const li = createElement({
       elementType: 'li',
+      classes: ['country-list__item'],
       flex: true,
     });
 
@@ -81,17 +55,17 @@ const listOfCountriesLayout = object => {
         elementType: 'button',
         dataset: { index },
         innerText: 'ℹ',
-        bold: true,
-        size: 30,
+        classes: ['btn-info'],
       }),
       createElement({
         elementType: 'img',
+        classes: ['flag', 'flag--small'],
         src: svg,
         alt: alt,
-        size: 60,
       }),
       createElement({
         elementType: 'p',
+        classes: ['country-list__name'],
         innerText: officialName,
       })
     );
@@ -118,28 +92,31 @@ const countryInfoLayout = (object, btnIndex) => {
 
     const ul = createElement({
       elementType: 'ul',
+      classes: ['country-info__list'],
     });
 
     // First Item
-    const li1 = createElement({
-      elementType: 'li',
+    const div = createElement({
+      elementType: 'div',
+      classes: ['country-info__container'],
       flex: true,
     });
-    li1.append(
+    div.append(
       createElement({
         elementType: 'img',
+        classes: ['flag'],
         src: svg,
         alt: alt,
-        size: 40,
       }),
       createElement({
         elementType: 'h1',
+        classes: ['country-info__title'],
         innerText: officialName,
       })
     );
 
     // Second Item
-    const li2 = createElement({
+    const li = createElement({
       elementType: 'li',
     });
     Object.entries(dataInfo).forEach(key => {
@@ -148,22 +125,24 @@ const countryInfoLayout = (object, btnIndex) => {
 
       const p = createElement({
         elementType: 'p',
+        classes: ['country-info__details'],
         innerText: values,
-        fontSize: 20,
       });
       p.prepend(
         createElement({
           elementType: 'span',
+          classes: ['bold'],
           innerText: capitalizeFirstLetter(`${title}: `),
           bold: true,
         })
       );
-      li2.append(p);
+      li.append(p);
     });
 
-    ul.append(li1, li2);
+    ul.append(li);
 
     if (btnIndex === idx) {
+      allInfoCountries.push(div);
       allInfoCountries.push(ul);
     }
   });
@@ -228,7 +207,9 @@ window.addEventListener('load', () => {
         })
         .catch(error => {
           console.log(error);
-          Notify.failure('Oops, there is no country with that name');
+          if (searchBoxEl.value.length > 0) {
+            Notify.failure('Oops, there is no country with that name');
+          }
         });
     }, DEBOUNCE_DELAY)
   );

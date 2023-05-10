@@ -206,7 +206,6 @@ window.addEventListener('load', () => {
           });
         })
         .catch(error => {
-          console.log(error);
           if (searchBoxEl.value.length > 0) {
             Notify.failure('Oops, there is no country with that name');
           }

@@ -54,7 +54,7 @@ const listOfCountriesLayout = object => {
       createElement({
         elementType: 'button',
         dataset: { index },
-        innerText: 'ℹ',
+        innerText: 'i',
         classes: ['btn-info'],
       }),
       createElement({
